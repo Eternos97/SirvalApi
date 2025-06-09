@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35931.197 d17.13
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SirvalApi", "SirvalApi.csproj", "{42595D95-2199-4607-8EBD-35781F996038}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42595D95-2199-4607-8EBD-35781F996038}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42595D95-2199-4607-8EBD-35781F996038}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42595D95-2199-4607-8EBD-35781F996038}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42595D95-2199-4607-8EBD-35781F996038}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {DEA2D804-5DE1-489C-B2E9-C8F945E3C4E7}
+	EndGlobalSection
+EndGlobal

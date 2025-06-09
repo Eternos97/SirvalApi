@@ -1,0 +1,6 @@
+@SirvalApi_HostAddress = http://localhost:5193
+
+GET {{SirvalApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
