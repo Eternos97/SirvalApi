@@ -1,6 +1,6 @@
 # 🚨 SIRVAL API - Sistema de Gestión de Alertas
 
-API RESTful para el **Sistema Inteligente de Registro y Visualización de Alertas Locales (SIRVAL)**, desarrollada en **ASP.NET Core** con **MySQL**.
+API RESTful para el **Sistema Inteligente de Registro y Visualización de Alertas Locales (SIRVAL)**, desarrollada en **ASP.NET Core** con **MySQL**. Permite gestionar dispositivos de red, registrar y clasificar alertas de seguridad, y asignar responsables para su atención. Este sistema, denominado SIRVAL+, está orientado a mejorar los procesos de monitoreo básico en infraestructuras pequeñas o medianas, tales como laboratorios universitarios, instituciones educativas o entornos corporativos.
 
 ---
 
@@ -16,7 +16,7 @@ API RESTful para el **Sistema Inteligente de Registro y Visualización de Alerta
 - [📄 Licencia](#-licencia)
 
 ---
-## Importante correr dentro del proyecto por medio de cmd esos comandos:
+## Importante correr dentro del proyecto por medio de cmd estos comandos:
 
 - Install-Package Pomelo.EntityFrameworkCore.MySql -Version 8.0.0
 
