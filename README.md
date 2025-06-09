@@ -16,7 +16,14 @@ API RESTful para el **Sistema Inteligente de Registro y Visualización de Alerta
 - [📄 Licencia](#-licencia)
 
 ---
+## Importante correr dentro del proyecto por medio de cmd esos comandos:
 
+- Install-Package Pomelo.EntityFrameworkCore.MySql -Version 8.0.0
+
+- Install-Package Microsoft.EntityFrameworkCore.Design -Version 8.0.0
+
+- Install-Package Microsoft.EntityFrameworkCore.Tools -Version 8.0.0
+----
 ## 🛠 Requisitos
 
 - [.NET 6.0 SDK o superior](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
