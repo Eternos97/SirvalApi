@@ -24,8 +24,8 @@ jobs:
 
       - name: Run API tests
         run: |
-          newman run postman/SIRVAL.postman_collection.json \
-            -e postman/SIRVAL.postman_environment.json \
+          newman run postman/SIRVAL.postman_collection \
+            -e postman/SIRVAL.postman_environment \
             --reporters cli,html \
             --reporter-html-export report.html
 
