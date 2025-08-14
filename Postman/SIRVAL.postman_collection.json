@@ -1,0 +1,265 @@
+{
+	"info": {
+		"_postman_id": "676fb0d3-9e53-42ba-a81c-c29989b7013e",
+		"name": "SIRVAL API TEST",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "45347403",
+		"_collection_link": "https://jeaustinsotomata.postman.co/workspace/Jeaustin-Soto-Mata's-Workspace~11741939-9d88-4735-832b-161450aba77f/collection/45347403-676fb0d3-9e53-42ba-a81c-c29989b7013e?action=share&source=collection_link&creator=45347403"
+	},
+	"item": [
+		{
+			"name": "Prueba 1",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// ===== Tests básicos y seguros para todas las respuestas =====\r",
+							"\r",
+							"// 1️⃣ Validar código HTTP esperado (200 o 201)\r",
+							"pm.test(\"Código HTTP es 200 o 201\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 201]);\r",
+							"});\r",
+							"\r",
+							"// 2️⃣ Validar que el tiempo de respuesta sea menor a 500ms\r",
+							"pm.test(\"Tiempo de respuesta < 500ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"// 3️⃣ Validar que el Content-Type contenga JSON\r",
+							"pm.test(\"Content-Type contiene JSON\", function () {\r",
+							"    var ct = pm.response.headers.get(\"Content-Type\");\r",
+							"    pm.expect(ct.toLowerCase()).to.include(\"json\");\r",
+							"});\r",
+							"\r",
+							"// 4️⃣ Validar que la respuesta sea un objeto JSON\r",
+							"pm.test(\"Respuesta es JSON válida\", function () {\r",
+							"    pm.expect(pm.response.json()).to.be.an(\"object\");\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Severidad\": \"Alta\",\r\n    \"Detalle_Alerta\": \"Se detectó un error crítico en el sistema\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7280/api/Alertas",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7280",
+					"path": [
+						"api",
+						"Alertas"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Prueba 2",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Código HTTP 200\r",
+							"pm.test(\"Código HTTP es 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"// Tiempo de respuesta < 500ms\r",
+							"pm.test(\"Tiempo de respuesta < 500ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"// Content-Type JSON\r",
+							"pm.test(\"Content-Type es JSON\", function () {\r",
+							"    var ct = pm.response.headers.get(\"Content-Type\");\r",
+							"    pm.expect(ct.toLowerCase()).to.include(\"json\");\r",
+							"});\r",
+							"\r",
+							"// Validar que la respuesta sea un arreglo y tenga al menos un elemento\r",
+							"pm.test(\"La respuesta es un arreglo con elementos\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData).to.be.an(\"array\");\r",
+							"    pm.expect(jsonData.length).to.be.above(0);\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:7280/api/Asignaciones",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7280",
+					"path": [
+						"api",
+						"Asignaciones"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Prueba 3",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"var jsonData = pm.response.json();\r",
+							"\r",
+							"// Validar código HTTP (200 OK o 400 Bad Request)\r",
+							"pm.test(\"Código HTTP esperado\", function () {\r",
+							"    pm.expect(pm.response.code).to.be.oneOf([200, 400]);\r",
+							"});\r",
+							"\r",
+							"// Tiempo de respuesta < 500ms\r",
+							"pm.test(\"Tiempo de respuesta < 500ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"// Content-Type contiene JSON\r",
+							"pm.test(\"Content-Type es JSON\", function () {\r",
+							"    var ct = pm.response.headers.get(\"Content-Type\");\r",
+							"    pm.expect(ct.toLowerCase()).to.include(\"json\");\r",
+							"});\r",
+							"\r",
+							"// Validar propiedad success solo si el código es 200\r",
+							"if(pm.response.code === 200){\r",
+							"    pm.test(\"La respuesta contiene 'success'\", function () {\r",
+							"        pm.expect(jsonData).to.have.property(\"success\", true);\r",
+							"    });\r",
+							"}\r",
+							"\r",
+							"// Si el código es 400, verificar que haya mensaje de error\r",
+							"if(pm.response.code === 400){\r",
+							"    pm.test(\"La respuesta de error contiene mensaje\", function () {\r",
+							"        pm.expect(jsonData).to.have.property(\"title\");\r",
+							"    });\r",
+							"}\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Id_Dispositivo\": 101,\r\n    \"Nombre\": \"Dispositivo Actualizado\",\r\n    \"Estado\": \"Activo\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7280/api/Dispositivos/{id}",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7280",
+					"path": [
+						"api",
+						"Dispositivos",
+						"{id}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Prueba 4",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"// Código HTTP 400 esperado\r",
+							"pm.test(\"Inserción duplicada devuelve 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"// Tiempo de respuesta < 500ms\r",
+							"pm.test(\"Tiempo de respuesta < 500ms\", function () {\r",
+							"    pm.expect(pm.response.responseTime).to.be.below(500);\r",
+							"});\r",
+							"\r",
+							"// Content-Type JSON\r",
+							"pm.test(\"Content-Type es JSON\", function () {\r",
+							"    var ct = pm.response.headers.get(\"Content-Type\");\r",
+							"    pm.expect(ct.toLowerCase()).to.include(\"json\");\r",
+							"});\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n    \"Id_Tipo\": 5,\r\n    \"Nombre\": \"Alerta Duplicada\"\r\n}\r\n",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://localhost:7280/api/TiposAlerta",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "7280",
+					"path": [
+						"api",
+						"TiposAlerta"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
