@@ -64,15 +64,13 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:7280/api/Alertas",
-					"protocol": "http",
+					"raw": "{{baseUrl}}/api/Alertas\n",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "7280",
 					"path": [
 						"api",
-						"Alertas"
+						"Alertas\n"
 					]
 				}
 			},
@@ -118,12 +116,10 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:7280/api/Asignaciones",
-					"protocol": "http",
+					"raw": "{{baseUrl}}/api/Asignaciones",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "7280",
 					"path": [
 						"api",
 						"Asignaciones"
@@ -190,16 +186,14 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:7280/api/Dispositivos/{id}",
-					"protocol": "http",
+					"raw": "{{baseUrl}}/api/Dispositivos/{{deviceId}}",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "7280",
 					"path": [
 						"api",
 						"Dispositivos",
-						"{id}"
+						"{{deviceId}}"
 					]
 				}
 			},
@@ -247,12 +241,10 @@
 					}
 				},
 				"url": {
-					"raw": "http://localhost:7280/api/TiposAlerta",
-					"protocol": "http",
+					"raw": "{{baseUrl}}/api/TiposAlerta",
 					"host": [
-						"localhost"
+						"{{baseUrl}}"
 					],
-					"port": "7280",
 					"path": [
 						"api",
 						"TiposAlerta"
