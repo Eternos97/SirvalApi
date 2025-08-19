@@ -3,15 +3,11 @@ name: SIRVAL API Test Suite
 on:
   push:
     branches: [ main ]
-  schedule:
-    - cron: '0 18 * * *'  # Ejecución diaria a las 18:00 UTC
-  workflow_dispatch:       # Permite ejecución manual
+  workflow_dispatch:
 
 jobs:
   api-tests:
-    name: Run API Tests
     runs-on: ubuntu-latest
-    timeout-minutes: 30    # Previene ejecuciones infinitas
 
     steps:
     - name: Checkout Code
@@ -21,68 +17,38 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'npm'
+        cache: 'false'   # Evita warning de lock file
 
-    - name: Install Dependencies
-      run: |
-        npm install -g \
-          newman@^7 \
-          newman-reporter-htmlextra@^1 \
-          newman-reporter-slack@^1
+    - name: Install Newman
+      run: npm install -g newman newman-reporter-htmlextra
 
-    - name: Validate Files
-      id: validation
-      run: |
-        # Verificar existencia de archivos
-        [ -f "postman/collection.json" ] || { echo "::error::Collection file missing"; exit 1; }
-        [ -f "postman/environment.json" ] || { echo "::warning::Environment file missing (using CLI vars)"; }
-        
-        # Validar formato JSON
-        jq empty postman/collection.json || { echo "::error::Invalid collection JSON"; exit 1; }
-        [ -f "postman/environment.json" ] && jq empty postman/environment.json || true
-
-    - name: Run Newman Tests
+    - name: Run API Tests
       env:
         API_BASE_URL: ${{ secrets.API_BASE_URL }}
         AUTH_TOKEN: ${{ secrets.API_AUTH_TOKEN }}
       run: |
-        newman run "postman/collection.json" \
-          --environment "postman/environment.json" \
+        mkdir -p test-results
+        newman run "Postman/collection.json" \
+          --environment "Postman/environment.json" \
           --global-var "base_url=$API_BASE_URL" \
           --global-var "auth_token=$AUTH_TOKEN" \
           --reporters cli,htmlextra \
           --reporter-htmlextra-export "test-results/report-$GITHUB_RUN_ID.html" \
-          --reporter-htmlextra-title "SIRVAL API Report" \
-          --reporter-htmlextra-darkMode \
-          --reporter-htmlextra-showEnvironmentData \
-          --reporter-htmlextra-logs \
-          --disable-unicode \
-          --color on \
-          --verbose
+          --reporter-htmlextra-title "SIRVAL API Report"
 
-    - name: Upload Results
+    - name: Upload HTML Report
       uses: actions/upload-artifact@v4
       with:
-        name: api-test-results
-        path: |
-          test-results/*.html
-          newman/*.json
+        name: api-test-report
+        path: test-results/*.html
 
-    - name: Notify Slack (Opcional)
+    - name: Notify Slack if tests fail
       if: failure()
-      uses: slackapi/slack-github-action@v2
+      uses: slackapi/slack-github-action@v4
       with:
         payload: |
           {
-            "attachments": [
-              {
-                "color": "danger",
-                "title": "⚠️ Fallaron pruebas API en SIRVAL",
-                "text": "Repositorio: ${{ github.repository }}\nEjecutado por: ${{ github.actor }}\nDetalles: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-                "footer": "GitHub Actions",
-                "ts": ${{ github.run_id }}
-              }
-            ]
+            "text": "⚠️ Fallaron pruebas API en SIRVAL. Repositorio: ${{ github.repository }}\nLink: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
           }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
