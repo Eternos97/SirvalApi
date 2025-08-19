@@ -26,10 +26,10 @@ jobs:
         NGROK_URL: ${{ secrets.NGROK_URL }}
       run: |
        # Listar contenido de la carpeta postman para verificación
-       ls -la postman/
+       ls -la Postman/
     
         # Ejecutar pruebas
-        newman run "postman/SIRVAL API TEST.postman_collection.json" \
+        newman run "Postman/SIRVAL API TEST.postman_collection.json" \
         --global-var "base_url=$NGROK_URL" \
         --reporters htmlextra \
         --reporter-htmlextra-export ./test-results/report.html
