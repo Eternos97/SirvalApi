@@ -72,6 +72,17 @@ jobs:
       if: failure()
       uses: slackapi/slack-github-action@v2
       with:
-        slack-message: "⚠️ Fallaron pruebas API en SIRVAL (${{ github.repository }})\nDetalles: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+        payload: |
+          {
+            "attachments": [
+              {
+                "color": "danger",
+                "title": "⚠️ Fallaron pruebas API en SIRVAL",
+                "text": "Repositorio: ${{ github.repository }}\nEjecutado por: ${{ github.actor }}\nDetalles: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+                "footer": "GitHub Actions",
+                "ts": ${{ github.run_id }}
+              }
+            ]
+          }
       env:
         SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
