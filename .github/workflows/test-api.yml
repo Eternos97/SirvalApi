@@ -1,45 +1,78 @@
-name: SIRVAL API Tests
+name: SIRVAL API Test Suite
 
 on:
   push:
-    branches: [main]
-  workflow_dispatch:
+    branches: [ main ]
+  schedule:
+    - cron: '0 18 * * *'  # Ejecución diaria a las 18:00 UTC
+  workflow_dispatch:       # Permite ejecución manual
 
 jobs:
-  test:
+  api-tests:
+    name: Run API Tests
     runs-on: ubuntu-latest
+    timeout-minutes: 30    # Previene ejecuciones infinitas
 
     steps:
-    - uses: actions/checkout@v4
+    - name: Checkout Code
+      uses: actions/checkout@v4
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
         node-version: '20'
+        cache: 'npm'
 
-    - name: Install Newman
-      run: npm install -g newman newman-reporter-htmlextra
-
-    - name: Verify Files Exist
+    - name: Install Dependencies
       run: |
-        echo "Estructura del repositorio:"
-        ls -R
-        [ -f "Postman/sirval_api_collection.json" ] || { echo "❌ Error: No se encontró la colección"; exit 1; }
-        [ -f "Postman/sirval_local_env.json" ] || { echo "❌ Error: No se encontró el entorno"; exit 1; }
+        npm install -g \
+          newman@^7 \
+          newman-reporter-htmlextra@^1 \
+          newman-reporter-slack@^1
 
-    - name: Run API Tests
+    - name: Validate Files
+      id: validation
+      run: |
+        # Verificar existencia de archivos
+        [ -f "postman/collection.json" ] || { echo "::error::Collection file missing"; exit 1; }
+        [ -f "postman/environment.json" ] || { echo "::warning::Environment file missing (using CLI vars)"; }
+        
+        # Validar formato JSON
+        jq empty postman/collection.json || { echo "::error::Invalid collection JSON"; exit 1; }
+        [ -f "postman/environment.json" ] && jq empty postman/environment.json || true
+
+    - name: Run Newman Tests
       env:
-        API_BASE_URL: ${{ secrets.NGROK_URL }}
+        API_BASE_URL: ${{ secrets.API_BASE_URL }}
+        AUTH_TOKEN: ${{ secrets.API_AUTH_TOKEN }}
       run: |
-        newman run Postman/sirval_api_collection.json \
-          --environment Postman/sirval_local_env.json \
+        newman run "postman/collection.json" \
+          --environment "postman/environment.json" \
           --global-var "base_url=$API_BASE_URL" \
-          --reporters htmlextra \
-          --reporter-htmlextra-export ./test-results/report.html \
-          --reporter-htmlextra-title "SIRVAL API Test Report"
+          --global-var "auth_token=$AUTH_TOKEN" \
+          --reporters cli,htmlextra \
+          --reporter-htmlextra-export "test-results/report-$GITHUB_RUN_ID.html" \
+          --reporter-htmlextra-title "SIRVAL API Report" \
+          --reporter-htmlextra-darkMode \
+          --reporter-htmlextra-showEnvironmentData \
+          --reporter-htmlextra-logs \
+          --disable-unicode \
+          --color on \
+          --verbose
 
-    - name: Upload Report
+    - name: Upload Results
       uses: actions/upload-artifact@v4
       with:
-        name: api-test-report
-        path: ./test-results/report.html
+        name: api-test-results
+        path: |
+          test-results/*.html
+          newman/*.json
+
+    - name: Notify Slack (Opcional)
+      if: failure()
+      uses: slackapi/slack-github-action@v2
+      with:
+        slack-message: "⚠️ Fallaron pruebas API en SIRVAL (${{ github.repository }})\nDetalles: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+      env:
+        SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK }}
+        
