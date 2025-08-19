@@ -21,15 +21,15 @@ jobs:
     - name: Install Newman (Postman CLI)
       run: npm install -g newman newman-reporter-htmlextra
 
-    - name: Run API Tests
-      env:
-        NGROK_URL: ${{ secrets.NGROK_URL }}  # Configúralo en GitHub Secrets
-      run: |
-        newman run ./postman/SIRVAL API TEST.postman_collection.json \
-          --environment ./postman/SIRVALN-LOCAL.postman_environment.json \
-          --global-var "base_url=$NGROK_URL" \
-          --reporters htmlextra \
-          --reporter-htmlextra-export ./test-results/report.html
+ - name: Run API Tests
+  env:
+    NGROK_URL: ${{ secrets.NGROK_URL }}
+  run: |
+    newman run postman/SIRVAL_API_TEST.postman_collection.json \
+      --environment postman/SIRVAL_LOCAL.postman_environment.json \
+      --global-var "base_url=$NGROK_URL" \
+      --reporters htmlextra \
+      --reporter-htmlextra-export ./test-results/report.html
 
     - name: Upload Test Report
       uses: actions/upload-artifact@v4
