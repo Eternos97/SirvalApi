@@ -27,8 +27,8 @@ jobs:
         AUTH_TOKEN: ${{ secrets.API_AUTH_TOKEN }}
       run: |
         mkdir -p test-results
-        newman run "Postman/collection.json" \
-          --environment "Postman/environment.json" \
+        newman run "Postman/sirval_api_collection.json" \
+          --environment "Postman/sirval_local_env.json" \
           --global-var "base_url=$API_BASE_URL" \
           --global-var "auth_token=$AUTH_TOKEN" \
           --reporters cli,htmlextra \
