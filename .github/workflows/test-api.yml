@@ -44,7 +44,7 @@ jobs:
 
     - name: Notify Slack if tests fail
       if: failure()
-      uses: slackapi/slack-github-action@v4
+      uses: slackapi/slack-github-action@v2
       with:
         payload: |
           {
