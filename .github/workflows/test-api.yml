@@ -1,81 +1,38 @@
-name: API Tests
+name: SIRVAL API Tests
 
 on:
   push:
-    branches: [ master ]     # usa master porque tu repo está en master
-  pull_request:
-    branches: [ master ]
+    branches: [ main ]
+  workflow_dispatch:  # Permite ejecuciÃ³n manual
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v4
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-      # 1) Instalar .NET (ajusta a la versión que use tu proyecto)
-      - name: Setup .NET
-        uses: actions/setup-dotnet@v4
-        with:
-          dotnet-version: '8.0.x'
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '18'
 
-      # 2) Restaurar, compilar y publicar (ajusta los paths a tu .sln y .csproj)
-      - name: Restore dependencies
-        run: dotnet restore ./SirvalApi.sln
+    - name: Install Newman (Postman CLI)
+      run: npm install -g newman newman-reporter-htmlextra
 
-      - name: Build
-        run: dotnet build ./SirvalApi.sln --configuration Release --no-restore
+    - name: Run API Tests
+      env:
+        NGROK_URL: ${{ secrets.NGROK_URL }}  # ConfigÃºralo en GitHub Secrets
+      run: |
+        newman run ./postman/sirval-collection.json \
+          --environment ./postman/sirval-environment.json \
+          --global-var "base_url=$NGROK_URL" \
+          --reporters htmlextra \
+          --reporter-htmlextra-export ./test-results/report.html
 
-      - name: Publish
-        run: dotnet publish ./SirvalApi/SirvalApi.csproj -c Release -o ./out
-
-      # 3) Ejecutar la API en segundo plano escuchando en http://localhost:5000
-      - name: Run API in background
-        working-directory: ./out
-        env:
-          ASPNETCORE_URLS: http://0.0.0.0:5000
-          ASPNETCORE_ENVIRONMENT: CI
-        run: |
-          nohup dotnet SirvalApi.dll > api.log 2>&1 &
-
-      # 4) Esperar a que la API esté lista (verifica /health o un endpoint GET real)
-      - name: Wait for API to be ready
-        run: |
-          for i in {1..30}; do
-            if curl -fsS http://localhost:5000/health >/dev/null 2>&1; then
-              echo "API ready (health)."; exit 0;
-            fi
-            if curl -fsS http://localhost:5000/api/Asignaciones >/dev/null 2>&1; then
-              echo "API ready (Asignaciones)."; exit 0;
-            fi
-            echo "Waiting for API... ($i/30)"; sleep 2;
-          done
-          echo "API did not start in time. Last log lines:"
-          tail -n 200 ./out/api.log || true
-          exit 1
-
-      # 5) Instalar Node.js y Newman
-      - name: Install Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '18'
-
-      - name: Install Newman
-        run: npm install -g newman newman-reporter-html
-
-      # 6) Ejecutar colección con el entorno de CI (baseUrl=http://localhost:5000)
-      - name: Run API tests
-        run: |
-          newman run postman/SIRVAL.postman_collection.json \
-            -e postman/SIRVAL.postman_environment.ci.json \
-            --reporters cli,html \
-            --reporter-html-export report.html
-
-      # 7) Subir reporte
-      - name: Upload HTML report
-        uses: actions/upload-artifact@v4
-        with:
-          name: postman-report
-          path: report.html
-
+    - name: Upload Test Report
+      uses: actions/upload-artifact@v4
+      with:
+        name: sirval-test-report
+        path: ./test-results/report.html
