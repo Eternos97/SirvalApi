@@ -25,13 +25,14 @@ jobs:
       env:
         NGROK_URL: ${{ secrets.NGROK_URL }}
       run: |
+       # Listar contenido de la carpeta postman para verificación
+       ls -la postman/
+    
+        # Ejecutar pruebas
         newman run "postman/SIRVAL API TEST.postman_collection.json" \
-          --environment "postman/SIRVALN-LOCAL.postman_environment.json" \
-          --global-var "base_url=$NGROK_URL" \
-          --reporters htmlextra \
-          --reporter-htmlextra-export ./test-results/report.html \
-          --reporter-htmlextra-title "SIRVAL API Test Report" \
-          --reporter-htmlextra-darkTheme
+        --global-var "base_url=$NGROK_URL" \
+        --reporters htmlextra \
+        --reporter-htmlextra-export ./test-results/report.html
 
     - name: Upload Test Report
       uses: actions/upload-artifact@v4
