@@ -24,8 +24,8 @@ jobs:
       run: |
         echo "Estructura del repositorio:"
         ls -R
-        [ -f "postman/sirval_api_collection.json" ] || { echo "❌ Error: No se encontró la colección"; exit 1; }
-        [ -f "postman/sirval_local_env.json" ] || { echo "❌ Error: No se encontró el entorno"; exit 1; }
+        [ -f "Postman/sirval_api_collection.json" ] || { echo "❌ Error: No se encontró la colección"; exit 1; }
+        [ -f "Postman/sirval_local_env.json" ] || { echo "❌ Error: No se encontró el entorno"; exit 1; }
 
     - name: Run API Tests
       env:
