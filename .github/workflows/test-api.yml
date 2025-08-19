@@ -17,7 +17,6 @@ jobs:
       uses: actions/setup-node@v4
       with:
         node-version: '20'
-        cache: 'false'   # Evita warning de lock file
 
     - name: Install Newman
       run: npm install -g newman newman-reporter-htmlextra
@@ -28,8 +27,8 @@ jobs:
         AUTH_TOKEN: ${{ secrets.API_AUTH_TOKEN }}
       run: |
         mkdir -p test-results
-        newman run "Postman/collection.json" \
-          --environment "Postman/environment.json" \
+        newman run "postman/collection.json" \
+          --environment "postman/environment.json" \
           --global-var "base_url=$API_BASE_URL" \
           --global-var "auth_token=$AUTH_TOKEN" \
           --reporters cli,htmlextra \
