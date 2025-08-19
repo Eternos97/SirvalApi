@@ -31,8 +31,8 @@ jobs:
       env:
         API_BASE_URL: ${{ secrets.NGROK_URL }}
       run: |
-        newman run postman/sirval_api_collection.json \
-          --environment postman/sirval_local_env.json \
+        newman run Postman/sirval_api_collection.json \
+          --environment Postman/sirval_local_env.json \
           --global-var "base_url=$API_BASE_URL" \
           --reporters htmlextra \
           --reporter-htmlextra-export ./test-results/report.html \
