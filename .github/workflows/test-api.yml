@@ -2,15 +2,15 @@ name: SIRVAL API Tests
 
 on:
   push:
-    branches: [ main ]
-  workflow_dispatch:  # Permite ejecución manual
+    branches: [main]
+  workflow_dispatch:
 
 jobs:
   test:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
+    - name: Checkout repository
       uses: actions/checkout@v4
 
     - name: Setup Node.js
@@ -18,21 +18,31 @@ jobs:
       with:
         node-version: '18'
 
-    - name: Install Newman (Postman CLI)
+    - name: Install Newman
       run: npm install -g newman newman-reporter-htmlextra
 
- - name: Run API Tests
-  env:
-    NGROK_URL: ${{ secrets.NGROK_URL }}
-  run: |
-    newman run postman/SIRVAL_API_TEST.postman_collection.json \
-      --environment postman/SIRVAL_LOCAL.postman_environment.json \
-      --global-var "base_url=$NGROK_URL" \
-      --reporters htmlextra \
-      --reporter-htmlextra-export ./test-results/report.html
+    - name: Run API Tests
+      env:
+        NGROK_URL: ${{ secrets.NGROK_URL }}
+      run: |
+        newman run "postman/SIRVAL API TEST.postman_collection.json" \
+          --environment "postman/SIRVALN-LOCAL.postman_environment.json" \
+          --global-var "base_url=$NGROK_URL" \
+          --reporters htmlextra \
+          --reporter-htmlextra-export ./test-results/report.html \
+          --reporter-htmlextra-title "SIRVAL API Test Report" \
+          --reporter-htmlextra-darkTheme
 
     - name: Upload Test Report
       uses: actions/upload-artifact@v4
       with:
         name: sirval-test-report
         path: ./test-results/report.html
+
+    - name: Deploy to GitHub Pages
+      uses: peaceiris/actions-gh-pages@v4
+      if: success()
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./test-results
+        keep_files: true
