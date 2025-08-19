@@ -10,40 +10,36 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout repository
-      uses: actions/checkout@v4
+    - uses: actions/checkout@v4
 
     - name: Setup Node.js
       uses: actions/setup-node@v4
       with:
-        node-version: '18'
+        node-version: '20'
 
     - name: Install Newman
       run: npm install -g newman newman-reporter-htmlextra
 
+    - name: Verify Files Exist
+      run: |
+        echo "Estructura del repositorio:"
+        ls -R
+        [ -f "postman/sirval_api_collection.json" ] || { echo "❌ Error: No se encontró la colección"; exit 1; }
+        [ -f "postman/sirval_local_env.json" ] || { echo "❌ Error: No se encontró el entorno"; exit 1; }
+
     - name: Run API Tests
       env:
-        NGROK_URL: ${{ secrets.NGROK_URL }}
+        API_BASE_URL: ${{ secrets.NGROK_URL }}
       run: |
-       # Listar contenido de la carpeta postman para verificación
-       ls -la Postman/
-    
-        # Ejecutar pruebas
-        newman run "Postman/SIRVAL API TEST.postman_collection.json" \
-        --global-var "base_url=$NGROK_URL" \
-        --reporters htmlextra \
-        --reporter-htmlextra-export ./test-results/report.html
+        newman run postman/sirval_api_collection.json \
+          --environment postman/sirval_local_env.json \
+          --global-var "base_url=$API_BASE_URL" \
+          --reporters htmlextra \
+          --reporter-htmlextra-export ./test-results/report.html \
+          --reporter-htmlextra-title "SIRVAL API Test Report"
 
-    - name: Upload Test Report
+    - name: Upload Report
       uses: actions/upload-artifact@v4
       with:
-        name: sirval-test-report
+        name: api-test-report
         path: ./test-results/report.html
-
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v4
-      if: success()
-      with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./test-results
-        keep_files: true
