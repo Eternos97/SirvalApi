@@ -25,8 +25,8 @@ jobs:
       env:
         NGROK_URL: ${{ secrets.NGROK_URL }}  # Configúralo en GitHub Secrets
       run: |
-        newman run ./postman/sirval-collection.json \
-          --environment ./postman/sirval-environment.json \
+        newman run ./postman/SIRVAL API TEST.postman_collection.json \
+          --environment ./postman/SIRVALN-LOCAL.postman_environment.json \
           --global-var "base_url=$NGROK_URL" \
           --reporters htmlextra \
           --reporter-htmlextra-export ./test-results/report.html
